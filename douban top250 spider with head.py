@@ -12,13 +12,14 @@ total_comment_num = []
 total_quote_list = []
 
 for page in range(0, 250, 25):
-    url = 'https://movie.douban.com/top250?start={}'.format(page)  # 两行就能完成上段注释部分的工作
+    url = 'https://movie.douban.com/top250?start={}'.format(page)
     # 构造合理的HTTP请求头， 伪装成浏览器， 绕过反爬虫机制，否则会被反爬虫机制拒绝（418）。 https://www.kesci.com/home/project/5dd6003700b0b900365feaeb
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.44 Safari/537.36"
     # 请求网页
     res = requests.get(url=url, headers={'User-Agent': user_agent})
     res.raise_for_status()  # 检查连接状态
     # res.encoding = 'utf-8'  # 编码转换
+
     '''
     用BeautifulSoup读html 
     关于BS：https://morvanzhou.github.io/tutorials/data-manipulation/scraping/2-01-beautifulsoup-basic/
@@ -31,14 +32,15 @@ for page in range(0, 250, 25):
     comment_num = []
     quote_list = []
 
-    movie_list = soup.find('ol', attrs={'class': 'grid_view'})
     '''
     所有电影信息在一个ol标签之内，该标签的 class属性值为grid_view
     find等价于limit=1的find_all
     https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh/#find
     soup.find_all('ol', attrs={'class': 'grid_view'}, limit=1)
     '''
+    movie_list = soup.find('ol', attrs={'class': 'grid_view'})
     #  print(movie_list)
+
 
     '''
     每个电影在一个li标签里面；
@@ -62,13 +64,13 @@ for page in range(0, 250, 25):
 
         comment_info = movie.find('div', attrs={'class': 'star'})  # 评论人数
         # print(comment_info)
-        num = re.findall(r'\d+', str(comment_info))[-1]
+
         '''
         findall返回一个列表，列表里是comment_info里的所有数字
         [-1]是选择此列表中最后一个数字，即评价人数。
         '''
-        # num1 = re.findall(r'\d+', str(comment_info))
-        # print(num1)
+        num = re.findall(r'\d+', str(comment_info))[-1]
+
         comment_num.append(num)
 
         quote = movie.find('span', attrs={'class': 'inq'})  # 短评
